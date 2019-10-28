@@ -1,0 +1,20 @@
+.header {
+  width: 100vw;
+  flex: 1 0 auto;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.library {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1 0 auto;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.modal-width-fit-content {
+  width: fit-content;
+  max-width: unset;
+}

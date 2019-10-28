@@ -33,3 +33,5 @@ jspm_packages/
 # gatsby files
 .cache
 public
+
+.DS_Store
