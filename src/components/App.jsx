@@ -1,7 +1,6 @@
 import React from 'react'
 import Container from 'react-bootstrap/Container'
-import InputGroup from 'react-bootstrap/InputGroup'
-import Form from 'react-bootstrap/Form'
+import Jumbotron from "react-bootstrap/Jumbotron";
 
 import Library from "./library";
 import Header from "./Header";
@@ -11,19 +10,17 @@ import './app.css'
 class App extends React.Component {
   render() {
     return (
-      <Container fluid>
+      <Container>
         <Header />
-        <InputGroup className="mb-3">
-          <Form.Control
-            placeholder="Search..."
-            aria-label="Search"
-            aria-describedby="basic-addon2"
-          />
-          <InputGroup.Append>
-            <InputGroup.Text id="basic-addon2">Search</InputGroup.Text>
-          </InputGroup.Append>
-        </InputGroup>
-        <Library />
+        <Jumbotron>
+          <h1 className="jumbotron-title">Welcome to the Archives!</h1>
+          <p>
+            Over the course of the past four years, we have painstakingly digitized every issue ever published by the South American Explorers.
+            All archives are free to read on or offline.
+            We hope you enjoy browsing them as much as we enjoyed writing them over these years
+          </p>
+        </Jumbotron>
+        <Library key="sae-archives" bucket="sae-archives" />
       </Container>
     )
   }

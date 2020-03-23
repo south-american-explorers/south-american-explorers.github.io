@@ -11,11 +11,20 @@ class PDFPreview extends Component {
     this.setState({ numPages });
   };
 
+  onDocumentLoadError = err => {
+    console.error('error loading pdf from url', this.props.url, err);
+  };
+
   render() {
     return (
       <div>
-        <Document file="./sae-mag-34g-sinking-village-assignment.pdf" onLoadSuccess={this.onDocumentLoadSuccess}>
-          <Page width={this.props.width || null} pageNumber={this.state.pageNumber} />
+        <Document
+          file={this.props.url}
+          renderMode="svg"
+          onLoadSuccess={this.onDocumentLoadSuccess}
+          onLoadError={this.onDocumentLoadError}
+        >
+          <Page width={200} renderMode="svg" pageNumber={this.state.pageNumber} />
         </Document>
       </div>
     )
