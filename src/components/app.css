@@ -1,9 +1,17 @@
-.header {
+@import url('https://fonts.googleapis.com/css2?family=Catamaran:wght@400;700&family=Roboto&display=swap');
+
+body {
+  font-family: Roboto, "sans-serif";
+}
+
+.header > h1 {
   width: 100vw;
   flex: 1 0 auto;
   justify-content: center;
   align-items: center;
   text-align: center;
+  font-family: "Catamaran", "sans-serif";;
+  font-weight: 700;
 }
 
 .library {
