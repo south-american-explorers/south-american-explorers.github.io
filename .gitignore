@@ -34,4 +34,7 @@ jspm_packages/
 .cache
 public
 
+# intellij
+.idea
+
 .DS_Store
