@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Catamaran:wght@400;700&family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Vollkorn&&display=swap;700&family=Roboto&display=swap');
 
 body {
   font-family: Roboto, "sans-serif";
@@ -10,7 +10,7 @@ body {
 }
 
 .header h1 {
-  font-family: "Catamaran", "sans-serif";
+  font-family: "Vollkorn", "sans-serif";
   font-weight: 400;
   font-size: 24px;
   line-height: normal;
@@ -18,7 +18,7 @@ body {
 }
 
 .jumbotron-title {
-  font-family: "Catamaran", "sans-serif";
+  font-family: "Vollkorn", "sans-serif";
   font-size: 40px;
 }
 
@@ -28,6 +28,33 @@ body {
   flex: 1 0 auto;
   align-items: center;
   justify-content: space-evenly;
+}
+
+.pad-0 {
+  padding: 0;
+}
+
+.pad-tb-24 {
+  padding: 24px 0;
+}
+
+.margin-left-8 {
+  margin-left: 8px;
+}
+
+.full-height {
+  height: 100vh;
+}
+
+.card-title {
+  max-height: 48px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  flex: 1 0 auto;
+}
+
+.height-140 {
+  height: 140px;
 }
 
 .react-pdf__Document {

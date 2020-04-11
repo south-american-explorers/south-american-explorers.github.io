@@ -14,9 +14,11 @@ class ArchiveCard extends Component {
     return (
       <Card>
         <PDFPreview width={200} url={this.props.url} />
-        <Card.Body>
-          <Card.Title>{this.props.title}</Card.Title>
-          <Button variant="primary" onClick={this.viewInBrowser}>Read</Button>
+        <Card.Body className="d-flex flex-column height-140">
+          <Card.Title className="card-title">{this.props.title}</Card.Title>
+          <div className="d-flex justify-content-end">
+            <Button variant="primary" onClick={this.viewInBrowser}>Read</Button>
+          </div>
         </Card.Body>
       </Card>
     )

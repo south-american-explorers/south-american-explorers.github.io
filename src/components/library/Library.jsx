@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import ArchiveCard from "./ArchiveCard";
 import AWS from "aws-sdk";
-import CardDeck from "react-bootstrap/CardDeck";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
@@ -42,11 +41,27 @@ class Library extends Component {
       if (err) {
         console.error(`i have an error bro ${err}`);
       } else {
-        state.items = data.Contents.map(item => ({
-          id: item.Key,
-          name: item.Key,
-          size: item.Size,
-        }));
+        const items = [];
+        let batch = [];
+        for (let i = 0; i < data.Contents.length; i++) {
+          console.log('i is', i)
+          if (i % this.state.columns === 0) {
+            console.log('adding batch to items and resetting - ', batch)
+            items.push(batch);
+            batch = [];
+          }
+          const item = data.Contents[i]
+          console.log('adding item to batch', item)
+          batch.push({ id: item.Key, name: item.Key, size: item.Size });
+        }
+
+        if (batch.length > 0) {
+          console.log('had some leftovers', batch)
+          items.push(batch)
+        }
+
+        console.log('items is', items);
+        state.items = items;
       }
 
       this.setState(state);
@@ -60,38 +75,24 @@ class Library extends Component {
   getItems() {
     const { items, columns } = this.state;
     if (items.length === 0) return null;
-    const batches = Math.ceil(items.length / columns);
-    const rendered = [];
-    console.log("here", batches);
-    // b0 i0 b0 i1 b0 i2 b0 i3
-    // b1 i4 b1 i5
-    let row = [];
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      console.log('item', item);
 
-      row.push(
-        <Col xs={2 * Math.ceil(12/columns)} md={Math.ceil(12/columns)}>
-          <ArchiveCard
-            key={items[i].id}
-            title={items[i].name}
-            url={this.getUrl(items[i].name)}
-          />
-        </Col>
+    return items.map((row, rowIndex) => {
+      return (
+        <Row key={rowIndex} sm={3}>
+          { 
+            row.map(item => (
+              <Col key={item.id} sm={3}>
+                <ArchiveCard
+                  key={item.id}
+                  title={item.name}
+                  url={this.getUrl(item.name)}
+                />
+              </Col>
+            ))
+          }
+        </Row>
       );
-
-      if (row.length === columns) {
-        console.log('have', row.length, 'items, creating new row');
-        rendered.push(<Row sm={12}>{row}</Row>);
-        row = [];
-      }
-    }
-
-    if (row.length) {
-      rendered.push(<Row sm={12}>{row}</Row>);
-    }
-    console.log('rendered', rendered);
-    return rendered;
+    })
   }
 
   render() {
