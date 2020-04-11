@@ -9,9 +9,9 @@ import { withRouter } from 'react-router-dom';
 
 import AWS from 'aws-sdk';
 import {
-  // AuthenticationDetails,
+  AuthenticationDetails,
   CognitoUserPool,
-  // CognitoUser
+  CognitoUser
 } from 'amazon-cognito-identity-js';
 
 class Login extends PureComponent {
@@ -31,29 +31,51 @@ class Login extends PureComponent {
       ClientId: '708ghdvttsljnfrvbj6v7cbac8', // Your client id here
     };
     const userPool = new CognitoUserPool(poolData);
-    console.log('userPool', userPool) 
-    const cognitoUser = userPool.getCurrentUser();
-    console.log('cognitoUser', cognitoUser)
-    if (cognitoUser !== null) {
-      console.log('user cognitoUser', cognitoUser)
+    console.log('userPool', userPool)
+    var authenticationDetails = new AuthenticationDetails({
+      Username : 'sar228@cornell.edu',
+    });
 
-      cognitoUser.getSession((err, result) => {
-        if (result) {
-          console.log('result', result)
-          AWS.config.region = 'us-east-1'; // Region
-          AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId: 'us-east-1:1cc7d35e-5a84-4d91-ba02-6f0ae4522362', // Cognito_SAEArchiveUnauth_Role
-            Logins: {
-              'cognito-idp.us-east-1.amazonaws.com/us-east-1_aJbpn1wXS': result.getIdToken().getJwtToken(),
-            },
-            LoginId: 'sar228@cornell.edu'
-          });
-          console.log(AWS.config.credentials)    
-        } else {
-          console.log('error', err)
-        }
-      })
-    }
+    var userData = {
+      Username : 'sar228@cornell.edu',
+      Pool : userPool
+    };
+
+    var cognitoUser = new CognitoUser(userData);
+    cognitoUser.setAuthenticationFlowType('USER_PASSWORD_AUTH');
+    cognitoUser.authenticateUser(authenticationDetails, {
+        onSuccess: function (result) {
+            console.log('access token + ' + result.getAccessToken().getJwtToken());
+            console.log('id token + ' + result.getIdToken().getJwtToken());
+            console.log('refresh token + ' + result.getRefreshToken().getToken());
+        },
+        onFailure: function(err) {
+            console.log(err);
+        },
+
+    });
+    // const cognitoUser = userPool.getCurrentUser();
+    // console.log('cognitoUser', cognitoUser)
+    // if (cognitoUser !== null) {
+    //   console.log('user cognitoUser', cognitoUser)
+
+    //   cognitoUser.getSession((err, result) => {
+    //     if (result) {
+    //       console.log('result', result)
+    //       AWS.config.region = 'us-east-1'; // Region
+    //       AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+    //         IdentityPoolId: 'us-east-1:1cc7d35e-5a84-4d91-ba02-6f0ae4522362', // Cognito_SAEArchiveUnauth_Role
+    //         Logins: {
+    //           'cognito-idp.us-east-1.amazonaws.com/us-east-1_aJbpn1wXS': result.getIdToken().getJwtToken(),
+    //         },
+    //         LoginId: 'sar228@cornell.edu'
+    //       });
+    //       console.log(AWS.config.credentials)    
+    //     } else {
+    //       console.log('error', err)
+    //     }
+    //   })
+    // }
   }
 
   render() {
