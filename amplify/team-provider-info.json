@@ -1,0 +1,22 @@
+{
+    "prod": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-sae-archive-amplify-prod-111856-authRole",
+            "UnauthRoleArn": "arn:aws:iam::854653518035:role/amplify-sae-archive-amplify-prod-111856-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::854653518035:role/amplify-sae-archive-amplify-prod-111856-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-sae-archive-amplify-prod-111856-deployment",
+            "UnauthRoleName": "amplify-sae-archive-amplify-prod-111856-unauthRole",
+            "StackName": "amplify-sae-archive-amplify-prod-111856",
+            "StackId": "arn:aws:cloudformation:us-east-1:854653518035:stack/amplify-sae-archive-amplify-prod-111856/13c069b0-7cea-11ea-a9b6-121b03ae900d",
+            "AmplifyAppId": "d3t8ecwj7ekmez"
+        },
+        "categories": {
+            "auth": {
+                "SAEArchiveAmplify": {
+                    "hostedUIProviderCreds": "[]"
+                }
+            }
+        }
+    }
+}

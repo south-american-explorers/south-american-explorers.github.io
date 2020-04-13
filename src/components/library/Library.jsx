@@ -1,14 +1,8 @@
-import React, { Component } from "react";
-import ArchiveCard from "./ArchiveCard";
-import AWS from "aws-sdk";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
-
-AWS.config.region = 'us-east-1'; // Region
-
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-  IdentityPoolId: 'us-east-1:1cc7d35e-5a84-4d91-ba02-6f0ae4522362', // Cognito_SAEArchiveUnauth_Role
-});
+import React, { Component } from 'react';
+import ArchiveCard from './ArchiveCard';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import { Storage } from 'aws-amplify';
 
 class Library extends Component {
   constructor() {
@@ -16,7 +10,6 @@ class Library extends Component {
     this.cardDeck = React.createRef();
     this.state = {
       fetching: false,
-      client: new AWS.S3(),
       items: [],
       columns: 4,
     };
@@ -34,38 +27,32 @@ class Library extends Component {
     }
   }
 
-  fetchFromBucket(bucketName) {
-    this.setState({ fetching: true });
-    this.state.client.listObjects({ "Bucket": bucketName }, (err, data) => {
-      const state = { fetching: false };
-      if (err) {
-        console.error(`i have an error bro ${err}`);
-      } else {
-        const items = [];
-        let batch = [];
-        for (let i = 0; i < data.Contents.length; i++) {
-          console.log('i is', i)
-          if (i % this.state.columns === 0) {
-            console.log('adding batch to items and resetting - ', batch)
-            items.push(batch);
-            batch = [];
-          }
-          const item = data.Contents[i]
-          console.log('adding item to batch', item)
-          batch.push({ id: item.Key, name: item.Key, size: item.Size });
+  createRows = data => {
+    return new Promise((resolve, reject) => {
+      const items = [];
+      let batch = [];
+      data = data.filter(item => !item.key.endsWith('/') && item.key !== '');
+      for (let i = 0; i < data.length; i++) {
+        if (i % this.state.columns === this.state.columns - 1) {
+          items.push(batch);
+          batch = [];
         }
-
-        if (batch.length > 0) {
-          console.log('had some leftovers', batch)
-          items.push(batch)
-        }
-
-        console.log('items is', items);
-        state.items = items;
+        const item = data[i]
+        batch.push({ id: item.key, name: item.key, size: item.size });
       }
 
-      this.setState(state);
+      if (batch.length > 0) items.push(batch)
+      return resolve(items)
     });
+  }
+
+  fetchFromBucket(bucketName) {
+    this.setState({ fetching: true });
+
+    Storage.list('')
+      .then(this.createRows)
+      .then(items => this.setState({ items, fetching: false }))
+      .catch(err => console.log(err));
   }
 
   getUrl(itemName) {
@@ -73,12 +60,12 @@ class Library extends Component {
   }
 
   getItems() {
-    const { items, columns } = this.state;
-    if (items.length === 0) return null;
+    const { items: rows } = this.state;
+    if (rows.length === 0) return null;
 
-    return items.map((row, rowIndex) => {
+    return rows.map((row, rowIndex) => {
       return (
-        <Row key={rowIndex} sm={3}>
+        <Row key={rowIndex} className="pad-bottom-24" sm={3}>
           { 
             row.map(item => (
               <Col key={item.id} sm={3}>

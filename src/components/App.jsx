@@ -4,12 +4,17 @@ import {
   Switch,
   Route,
 } from 'react-router-dom';
+import Amplify, { Auth } from 'aws-amplify';
+import awsconfig from 'src/aws-exports';
 
 import Home from './Home'
 import Login from './Login'
 import Admin from './Admin'
 
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css'
+
+Amplify.configure(awsconfig);
 
 class App extends React.Component {
   render() {

@@ -1,0 +1,15 @@
+{
+	"auth": {
+		"SAEArchiveAmplify": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": []
+		}
+	},
+	"storage": {
+		"SAEArchivesAmplify": {
+			"service": "S3",
+			"providerPlugin": "awscloudformation"
+		}
+	}
+}
