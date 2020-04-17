@@ -3,7 +3,6 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import randomcolor from 'randomcolor';
 
-import PDFPreview from './PDFPreview';
 import { Storage } from 'aws-amplify';
 import { S3Image } from 'aws-amplify-react';
 
@@ -34,7 +33,7 @@ class ArchiveCard extends PureComponent {
 
   render() {
     const { item, isFile } = this.props;
-    const { name, url = '' } = item; 
+    const { name } = item; 
 
     if (!isFile) {
       const bgColor = randomcolor({

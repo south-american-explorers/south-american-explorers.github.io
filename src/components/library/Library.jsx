@@ -3,16 +3,10 @@ import ArchiveCard from './ArchiveCard';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import { Storage } from 'aws-amplify';
-import awsconfig from 'src/aws-exports';
 import { withRouter } from 'react-router-dom';
 
 const FILE = 'file';
 const FOLDER = 'folder';
-const LIBRARY_TYPES = new Set([FILE, FOLDER]);
-
-const getUrl = name => {
-  return `https://${awsconfig.aws_user_files_s3_bucket}.s3.amazonaws.com/public/${name}`
-}
 
 class Library extends Component {
   constructor() {
@@ -52,13 +46,13 @@ class Library extends Component {
     return new Promise((resolve, reject) => {
       const { columns } = this.state;
       const { prefix = '' } = this.getQueryParams();
+
       const items = [];
       let batch = [];
-
       const folders = new Set();
+
       data = data.filter(datum => datum.key !== '' && !datum.key.includes('images/'))
         .filter(d => {
-          console.log(d.key, prefix, d.key.includes(prefix));
           const parts = d.key.split('/');
 
           // hack to get folders
@@ -70,7 +64,7 @@ class Library extends Component {
             const split = d.key.split('/');
             // if its a top level key, it will not have any '/' or if its a top level folder,
             // it will have an empty string in position 1
-            return split.length === 1 || split[1] == '';
+            return split.length === 1 || split[1] === '';
           } else if (d.key !== prefix && d.key.includes(prefix)) {
             return true;
           }
@@ -79,8 +73,8 @@ class Library extends Component {
         }).sort((a, b) => {
           const datumA = a.key.toUpperCase();
           const datumB = b.key.toUpperCase();
-          if (a < b) return -1;
-          else if (a > b) return 1;
+          if (datumA < datumB) return -1;
+          else if (datumA > datumB) return 1;
           return 0;
         });
 
@@ -101,10 +95,6 @@ class Library extends Component {
           type: item.key.endsWith('/') ? FOLDER : FILE,
         };
 
-        if (formatted.type === FILE) {
-          formatted.url = getUrl(formatted.name);
-        }
-
         batch.push(formatted);
       }
 
@@ -124,7 +114,7 @@ class Library extends Component {
   }
 
   getItems() {
-    const { items: rows, columns } = this.state;
+    const { items: rows } = this.state;
     if (rows.length === 0) return null;
 
     return rows.map((row, rowIndex) => {

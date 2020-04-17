@@ -4,7 +4,6 @@ import Jumbotron from 'react-bootstrap/Jumbotron';
 
 import Library from './library';
 import Header from './Header';
-import Footer from './Footer';
 
 class Home extends PureComponent {
   render() {

@@ -1,11 +1,9 @@
-import React, { PureComponent, useState, useCallback, useEffect, useReducer, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useReducer } from 'react';
 import Container from 'react-bootstrap/Container'
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import ProgressBar from 'react-bootstrap/ProgressBar';
 import Spinner from 'react-bootstrap/Spinner';
 
 import { withRouter } from 'react-router-dom';
@@ -34,8 +32,6 @@ const useAuth = () => {
 
   return { pending, error };
 };
-
-const initialFiles = [];
 
 function reducer(state, action) {
   switch (action.type) {
@@ -114,7 +110,6 @@ function Admin(props) {
 
   const handleEdit = (index, key) => e => {
     const { target: { value = '' } = {} } = e || {};
-    const file = files[index];
     dispatch({ type: 'updateFile', index, key, value })
   }
 
@@ -149,7 +144,6 @@ function Admin(props) {
   const handleLogout = () => {
     Auth.signOut()
       .then(data => {
-        console.log(data)
         props.history.push('/');
       })
       .catch(err => console.log(err));
@@ -206,7 +200,7 @@ function UploadItem(props) {
     <tr>
       <td>
         { !file.progress ? index + 1 : (
-          file.progress == 1
+          file.progress === 1
             ? (<Spinner size="sm" animation="border" role="status" />)
             : (<span>✅</span>)
         ) }
