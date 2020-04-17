@@ -18,6 +18,7 @@
     "aws-sdk": "^2.591.0",
     "bootstrap": "^4.3.1",
     "gatsby": "^2.17.4",
+    "randomcolor": "^0.5.4",
     "react": "^16.11.0",
     "react-bootstrap": "^1.0.0-beta.14",
     "react-contenteditable": "^3.3.4",
