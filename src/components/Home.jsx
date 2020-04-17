@@ -19,7 +19,7 @@ class Home extends PureComponent {
             We hope you enjoy browsing them as much as we enjoyed writing them over these years
           </p>
         </Jumbotron>
-        <Library key="sae-archives" bucket="sae-archives" />
+        <Library />
         <Footer />
       </Container>
     )

@@ -56,7 +56,11 @@ function reducer(state, action) {
 }
 
 const sanitizeString = str => {
-  return str.slice(0, -4);
+  if (str.indexOf('<br>') === -1) {
+    return str;
+  }
+
+  return str.slice(0, str.indexOf('<br>'));
 }
 
 function Admin(props) {
@@ -68,7 +72,6 @@ function Admin(props) {
   const [files, dispatch] = useReducer(reducer, acceptedFiles);
 
   if (acceptedFiles.length !== files.length) {
-    console.log('setting files to', acceptedFiles);
     dispatch({ type: 'setFiles', files: acceptedFiles })
   }
 
@@ -95,9 +98,10 @@ function Admin(props) {
       const fileName = sanitizeString(file.fileName || file.name);
       const publishYear = sanitizeString(file.publishYear || '');
       const key = publishYear ? `${publishYear}/${fileName}` : `${fileName}`;
-      Storage.put(key, file, { level: 'public' })
+
+      Storage.put(key, file, { level: 'public', contentType: file.type })
         .then(() => {
-          console.log('done uploading', fileName);
+          console.log('done uploading to ', key);
           dispatch({ type: 'updateProgress', progress: 2, index: i })
         })
         .catch(console.error)
