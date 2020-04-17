@@ -6,6 +6,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
+import Alert from 'react-bootstrap/Alert';
 
 import { withRouter } from 'react-router-dom';
 import { Auth } from 'aws-amplify';
@@ -43,34 +44,23 @@ class Login extends PureComponent {
     const username = this.usernameRef.current.value;
     const password = this.passwordRef.current.value;
 
+    this.setState({ loading: true, error: null })
     Auth.signIn(username, password)
       .then(user => {
-        // notification.success({
-        //   message: 'Succesfully logged in!',
-        //   description: 'Logged in successfully, Redirecting you in a few!',
-        //   placement: 'topRight',
-        //   duration: 1.5
-        // });
-
         this.props.history.push('/admin');
       })
-      .catch(err => {
-        // notification.error({
-        //   message: 'Error',
-        //   description: err.message,
-        //   placement: 'topRight'
-        // });
-
-        console.log(err);
-
-        // this.setState({ loading: false });
+      .catch(error => {
+        if (error.code === 'UserNotFoundException' || error.code === 'InvalidParameterException') {
+          error = { message: "Invalid username or password." }
+        }
+        this.setState({ loading: false, error });
       });
   }
 
   render() {
     return (
       <Container className="d-flex justify-content-center flex-column full-height">
-        <Header />
+        <Header titleOnly />
         <Row className="justify-content-center">
         { this.state.fetchingUser ? (
             <Spinner animation="border" role="status" />
@@ -96,8 +86,18 @@ class Login extends PureComponent {
                       ref={this.passwordRef}
                       aria-label="Default"
                       aria-describedby="inputGroup-sizing-default"
+                      type="password"
                     />
                   </InputGroup>
+                  { this.state.error ? (
+                    <>
+                      <br />
+                      <Alert variant="danger">
+                        { `Error signing you in: ${ this.state.error.message }` }
+                      </Alert>
+                    </>
+                    ) : null 
+                  }
                   <br />
                   <Col xs className="d-flex justify-content-end pad-0">
                     <Button onClick={this.handleCancel} variant="secondary">Cancel</Button>

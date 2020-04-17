@@ -1,4 +1,4 @@
-import React, { PureComponent, useState, useCallback, useEffect, useReducer } from 'react';
+import React, { PureComponent, useState, useCallback, useEffect, useReducer, useRef } from 'react';
 import Container from 'react-bootstrap/Container'
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
@@ -12,6 +12,7 @@ import { withRouter } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import ContentEditable from "react-contenteditable";
 import { Auth, Storage } from 'aws-amplify';
+import { Document, Page } from 'react-pdf/dist/entry.webpack';
 
 import Header from './Header';
 
@@ -56,20 +57,37 @@ function reducer(state, action) {
 }
 
 const sanitizeString = str => {
-  if (str.indexOf('<br>') === -1) {
-    return str;
+  let sanitized = str;
+  if (str.indexOf('<br>') !== -1) {
+    sanitized = str.slice(0, str.indexOf('<br>'))
   }
 
-  return str.slice(0, str.indexOf('<br>'));
+  // remove and file type endings
+  sanitized = sanitized.split('.')[0];
+  return sanitized
 }
 
-function Admin(props) {
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
-    accept: 'application/pdf, image/png',
-  });
+const canvasToFile = (canvas, name, type) => new Promise((resolve, reject) => {
+  try {
+    canvas.toBlob(blob => {
+      return resolve(new File([blob], name, { type }));
+    });
+  } catch (e) {
+    return reject(e);
+  }
+});
 
+const DROPZONE_DEFAULTS = {
+  accept: 'application/pdf',
+};
+
+function Admin(props) {
   const { pending, error } = useAuth();
+
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone(DROPZONE_DEFAULTS);
   const [files, dispatch] = useReducer(reducer, acceptedFiles);
+  const [refs, setRefs] = useState([]);
+
 
   if (acceptedFiles.length !== files.length) {
     dispatch({ type: 'setFiles', files: acceptedFiles })
@@ -82,6 +100,16 @@ function Admin(props) {
   if (!pending && error) {
     props.history.replace('/login');
     return (<div>Unauthorized</div>);
+  }
+
+  const setCanvasRef = index => ref => {
+    if (!ref) return;
+    
+    const canvas = ref.getElementsByTagName('canvas')[0];
+    if (!canvas) return;
+
+    refs[index] = canvas;
+    setRefs(refs);
   }
 
   const handleEdit = (index, key) => e => {
@@ -99,18 +127,37 @@ function Admin(props) {
       const publishYear = sanitizeString(file.publishYear || '');
       const key = publishYear ? `${publishYear}/${fileName}` : `${fileName}`;
 
-      Storage.put(key, file, { level: 'public', contentType: file.type })
+      const imageKey = `images/${key}`;
+
+      canvasToFile(refs[i], imageKey, 'image/png')
+        .then(thumbnailFile => {
+          console.log('uploading image to key', imageKey, thumbnailFile);
+          return Storage.put(imageKey, thumbnailFile, { level: 'public', contentType: 'image/png' })
+        })      
         .then(() => {
-          console.log('done uploading to ', key);
+          console.log('done uploading image to', imageKey)
+          return Storage.put(key, file, { level: 'public', contentType: file.type })
+        })
+        .then(() => {
+          console.log('done uploading file to', key);
           dispatch({ type: 'updateProgress', progress: 2, index: i })
         })
         .catch(console.error)
     }
   }
 
+  const handleLogout = () => {
+    Auth.signOut()
+      .then(data => {
+        console.log(data)
+        props.history.push('/');
+      })
+      .catch(err => console.log(err));
+  }
+
   return (
     <Container className="d-flex justify-content-center flex-column">
-      <Header />
+      <Header buttonTitle="Logout" onClick={handleLogout} />
       <Row className="justify-content-center flex-column">
         <div { ...getRootProps({ className: 'dropzone' }) }>
           <input { ...getInputProps() } />
@@ -123,8 +170,9 @@ function Admin(props) {
             <thead>
               <tr>
                 <th style={{'width': '10%'}}>#</th>
-                <th style={{'width': '60%'}}>File Name</th>
+                <th style={{'width': '50%'}}>File Name</th>
                 <th style={{'width': '30%'}}>Publish Year</th>
+                <th style={{'width': '10%'}}>Preview</th>
               </tr>
             </thead>
             <tbody>
@@ -134,6 +182,7 @@ function Admin(props) {
                   file={file}
                   index={index}
                   handleEdit={handleEdit}
+                  setCanvasRef={setCanvasRef}
                 />
               )) }
             </tbody>
@@ -150,7 +199,8 @@ function Admin(props) {
 }
 
 function UploadItem(props) {
-  const { index, file, handleEdit } = props;
+  const { index, file, handleEdit, setCanvasRef } = props;
+  const renderLoader = () => <Spinner size="sm" animation="border" role="status" />
 
   return (
     <tr>
@@ -172,6 +222,21 @@ function UploadItem(props) {
           html={file.publishYear !== undefined ? file.publishYear : '-'}
           onChange={ handleEdit(index, 'publishYear') }
         />
+      </td>
+      <td>
+        <Document
+          file={file}
+          renderMode="svg"
+          loading={renderLoader}
+          inputRef={setCanvasRef(index)}
+        >
+          <Page
+            width={125}
+            renderMode="canvas"
+            pageNumber={1}
+            loading=""
+          />
+        </Document>
       </td>
     </tr>
   );

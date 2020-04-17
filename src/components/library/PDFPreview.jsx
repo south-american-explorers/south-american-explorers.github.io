@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import {Document, Page} from "react-pdf/dist/entry.webpack";
+import React, { Component } from 'react';
+import { Document, Page } from 'react-pdf/dist/entry.webpack';
 
 class PDFPreview extends Component {
   state = {

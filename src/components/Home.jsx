@@ -20,7 +20,6 @@ class Home extends PureComponent {
           </p>
         </Jumbotron>
         <Library />
-        <Footer />
       </Container>
     )
   }

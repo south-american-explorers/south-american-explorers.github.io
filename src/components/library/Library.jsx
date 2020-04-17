@@ -55,10 +55,8 @@ class Library extends Component {
       const items = [];
       let batch = [];
 
-      console.log('data', data);
-      console.log('prefix', prefix);
       const folders = new Set();
-      data = data.filter(datum => datum.key !== '')
+      data = data.filter(datum => datum.key !== '' && !datum.key.includes('images/'))
         .filter(d => {
           console.log(d.key, prefix, d.key.includes(prefix));
           const parts = d.key.split('/');
