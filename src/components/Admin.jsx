@@ -150,7 +150,10 @@ function Admin(props) {
 
   return (
     <Container className="d-flex justify-content-center flex-column">
-      <Header leftButton={{ title: 'Home', onClick: handleHome }} rightButton={{ title: 'Logout', onClick: handleLogout }} />
+      <Header
+        leftButton={{ title: 'Home', onClick: handleHome }}
+        rightButton={{ title: 'Logout', onClick: handleLogout }}
+      />
       <Row className="justify-content-center flex-column">
         <div { ...getRootProps({ className: 'dropzone' }) }>
           <input { ...getInputProps() } />

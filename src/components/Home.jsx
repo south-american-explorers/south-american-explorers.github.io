@@ -7,7 +7,6 @@ import Header from './Header';
 import { navigate } from '@reach/router';
 
 import { getQueryParams } from './utils'
-console.log('getQueryParams', getQueryParams);
 
 const defaultJumbotron = () => ({
   style: {

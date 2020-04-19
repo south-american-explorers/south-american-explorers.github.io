@@ -18,10 +18,11 @@ function Header(props) {
     title: 'Login'
   };
 
-  let { leftButton = null, rightButton = null, titleOnly = false } = props;
+  let { leftButton = null, rightButton, titleOnly = false } = props;
   const width = 8;
 
-  if (!titleOnly) {
+  console.log(props);
+  if (!titleOnly && rightButton == null) {
     rightButton = defaultRightButton
   }
 
