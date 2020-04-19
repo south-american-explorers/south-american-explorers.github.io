@@ -38,7 +38,7 @@ class Home extends PureComponent {
     if (location.search === '') {
       jumbotron = defaultJumbotron();
     } else {
-      const qp = getQueryParams(this.props);
+      const { prefix = '' } = getQueryParams(this.props);
       jumbotron = folderJumbotron(qp.prefix.split('/')[0]);
     }
 
