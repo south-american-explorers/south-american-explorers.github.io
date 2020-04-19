@@ -21,11 +21,9 @@ function Header(props) {
   let { leftButton = null, rightButton, titleOnly = false } = props;
   const width = 8;
 
-  console.log(props);
   if (!titleOnly && rightButton == null) {
     rightButton = defaultRightButton
   }
-
 
   return (
     <Row className="header">
