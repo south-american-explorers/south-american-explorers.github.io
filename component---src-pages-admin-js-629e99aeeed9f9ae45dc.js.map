@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack:///./src/pages/admin.js"],"names":["App"],"mappings":"2FAAA,uBACeA,YAAf","file":"component---src-pages-admin-js-629e99aeeed9f9ae45dc.js","sourcesContent":["import App from 'src/components/App.jsx'\nexport default App;\n"],"sourceRoot":""}
