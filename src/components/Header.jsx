@@ -1,39 +1,52 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import { withRouter } from 'react-router-dom';
+import { navigate } from '@reach/router';
 
-class Header extends PureComponent {
-  handleHome = () => {
-    this.props.history.push('/');
+function Header(props) {
+  const handleHome = () => {
+    navigate('/');
   }
 
-  handleLogin = () => {
-    this.props.history.push('/login');
+  const handleLogin = () => {
+    navigate('/login');
   }
 
-  render() {
-    const { titleOnly = false } = this.props;
-    const width = titleOnly ? 12 : 8;
+  const defaultRightButton = {
+    onClick: handleLogin,
+    title: 'Login'
+  };
 
-    return (
-      <Row className="header">
-        { this.props.titleOnly ? null : (<Col xs={2} className="d-flex justify-content-end pad-0" />) }
+  let { leftButton = null, rightButton = null, titleOnly = false } = props;
+  const width = 8;
 
-        <Col xs={width} className="d-flex flex-column align-items-center">
-          <h1 onClick={this.handleHome}>south american explorers.</h1>
-        </Col>
+  if (!titleOnly) {
+    rightButton = defaultRightButton
+  }
 
-        { this.props.titleOnly ? null : (
-          <Col xs={2} className="d-flex justify-content-end pad-0">
-            <Button onClick={this.props.onClick || this.handleLogin}>{ this.props.buttonTitle || "Login" }</Button>
-          </Col>
+
+  return (
+    <Row className="header">
+      <Col xs={2} className="d-flex justify-content-start pad-0">
+        { leftButton === null
+            ? null
+            : (<Button onClick={leftButton.onClick}>{ leftButton.title }</Button>)
+        }
+      </Col>
+
+      <Col xs={width} className="d-flex flex-column align-items-center">
+        <h1 className="header-title" onClick={handleHome}>south american explorers.</h1>
+      </Col>
+
+      <Col xs={2} className="d-flex justify-content-end pad-0">
+        { rightButton == null ? null : (
+          <Button onClick={rightButton.onClick}>{ rightButton.title }</Button>
         ) }
+      </Col>
 
-      </Row>
-    )
-  }
+    </Row>
+  )
 }
 
-export default withRouter(Header);
+export default Header;

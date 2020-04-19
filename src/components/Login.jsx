@@ -7,17 +7,15 @@ import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
-
-import { withRouter } from 'react-router-dom';
 import { Auth } from 'aws-amplify';
 
 import Header from './Header';
 
-const SPINNER_DELAY = 1500
+const SPINNER_DELAY = 500
 
 class Login extends PureComponent {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.usernameRef = React.createRef();
     this.passwordRef = React.createRef();
     this.state = { fetchingUser: true };
@@ -28,16 +26,14 @@ class Login extends PureComponent {
       .then(() => {
         setTimeout(() => {
           this.setState({ fetchingUser: false })
-          this.props.history.push('/admin');
+          this.props.navigate('/admin', { replace: true });
         }, SPINNER_DELAY);
       })
-      .catch(err => {
-        setTimeout(() => this.setState({ fetchingUser: false }), SPINNER_DELAY);
-      })
+      .catch(err => this.setState({ fetchingUser: false }))
   }
 
   handleCancel = () => {
-    this.props.history.push('/');
+    this.props.navigate('/');
   }
 
   handleLogin = () => {
@@ -47,7 +43,7 @@ class Login extends PureComponent {
     this.setState({ loading: true, error: null })
     Auth.signIn(username, password)
       .then(user => {
-        this.props.history.push('/admin');
+        this.props.navigate('/admin', { replace: true });
       })
       .catch(error => {
         if (error.code === 'UserNotFoundException' || error.code === 'InvalidParameterException') {
@@ -90,12 +86,12 @@ class Login extends PureComponent {
                     />
                   </InputGroup>
                   { this.state.error ? (
-                    <>
+                    <React.Fragment>
                       <br />
                       <Alert variant="danger">
                         { `Error signing you in: ${ this.state.error.message }` }
                       </Alert>
-                    </>
+                    </React.Fragment>
                     ) : null 
                   }
                   <br />
@@ -112,4 +108,4 @@ class Login extends PureComponent {
   }
 }
 
-export default withRouter(Login);
+export default Login;

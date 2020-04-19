@@ -5,12 +5,11 @@ import Row from 'react-bootstrap/Row';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
-
-import { withRouter } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import ContentEditable from "react-contenteditable";
 import { Auth, Storage } from 'aws-amplify';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
+import { Redirect } from '@reach/router';
 
 import Header from './Header';
 
@@ -27,7 +26,7 @@ const useAuth = () => {
   }, []);
 
   useEffect(() => {
-    execute();
+    if (execute) execute();
   }, [execute]);
 
   return { pending, error };
@@ -94,8 +93,7 @@ function Admin(props) {
   }
 
   if (!pending && error) {
-    props.history.replace('/login');
-    return (<div>Unauthorized</div>);
+    return (<Redirect to="/login" />);
   }
 
   const setCanvasRef = index => ref => {
@@ -126,15 +124,12 @@ function Admin(props) {
 
       canvasToFile(refs[i], imageKey, 'image/png')
         .then(thumbnailFile => {
-          console.log('uploading image to key', imageKey, thumbnailFile);
           return Storage.put(imageKey, thumbnailFile, { level: 'public', contentType: 'image/png' })
         })      
         .then(() => {
-          console.log('done uploading image to', imageKey)
           return Storage.put(key, file, { level: 'public', contentType: file.type })
         })
         .then(() => {
-          console.log('done uploading file to', key);
           dispatch({ type: 'updateProgress', progress: 2, index: i })
         })
         .catch(console.error)
@@ -144,14 +139,18 @@ function Admin(props) {
   const handleLogout = () => {
     Auth.signOut()
       .then(data => {
-        props.history.push('/');
+        props.navigate('/');
       })
-      .catch(err => console.log(err));
+      .catch(console.error);
+  }
+
+  const handleHome = () => {
+    props.navigate('/');
   }
 
   return (
     <Container className="d-flex justify-content-center flex-column">
-      <Header buttonTitle="Logout" onClick={handleLogout} />
+      <Header leftButton={{ title: 'Home', onClick: handleHome }} rightButton={{ title: 'Logout', onClick: handleLogout }} />
       <Row className="justify-content-center flex-column">
         <div { ...getRootProps({ className: 'dropzone' }) }>
           <input { ...getInputProps() } />
@@ -236,4 +235,4 @@ function UploadItem(props) {
   );
 }
 
-export default withRouter(Admin);
+export default Admin;

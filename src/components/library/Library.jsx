@@ -3,19 +3,27 @@ import ArchiveCard from './ArchiveCard';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import { Storage } from 'aws-amplify';
-import { withRouter } from 'react-router-dom';
 
 const FILE = 'file';
 const FOLDER = 'folder';
 
 class Library extends Component {
-  constructor() {
-    super();
-    this.cardDeck = React.createRef();
+  static getDerivedStateFromProps(props, state) {
+    if (props.location.search && state.columns !== 4) {
+      return { columns: 4 }
+    } else if (!props.location.search && state.columns !== 3) {
+      return { columns: 3 }
+    }
+
+    return null;
+  }
+
+  constructor(props) {
+    super(props);
     this.state = {
       fetching: false,
       items: [],
-      columns: 4,
+      columns: props.location.search ? 4 : 3,
     };
   }
 
@@ -83,11 +91,6 @@ class Library extends Component {
       });
 
       for (let i = 0; i < data.length; i++) {
-        if (i % columns === columns - 1) {
-          items.push(batch);
-          batch = [];
-        }
-
         const item = data[i]
         const formatted = {
           id: item.key,
@@ -96,9 +99,15 @@ class Library extends Component {
         };
 
         batch.push(formatted);
+
+        if (i % columns === columns - 1) {
+          items.push(batch);
+          batch = [];
+        }
       }
 
       if (batch.length > 0) items.push(batch)
+
       return resolve(items)
     });
   }
@@ -110,11 +119,11 @@ class Library extends Component {
     Storage.list(prefix)
       .then(this.createRows)
       .then(items => this.setState({ items, fetching: false }))
-      .catch(err => console.log(err));
+      .catch(console.error);
   }
 
   getItems() {
-    const { items: rows } = this.state;
+    const { items: rows, columns } = this.state;
     if (rows.length === 0) return null;
 
     return rows.map((row, rowIndex) => {
@@ -122,12 +131,11 @@ class Library extends Component {
         <Row key={rowIndex} className="pad-bottom-24">
           { 
             row.map(item => (
-              <Col key={item.id} sm={4}>
+              <Col key={item.id} sm={12 / columns}>
                 <ArchiveCard
                   key={item.id}
                   item={item}
                   isFile={item.type === FILE}
-                  pushTo={this.props.history.push}
                 />
               </Col>
             ))
@@ -146,4 +154,4 @@ class Library extends Component {
   }
 }
 
-export default withRouter(Library)
+export default Library;

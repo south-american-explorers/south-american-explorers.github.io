@@ -1,16 +1,17 @@
 import React, { PureComponent } from 'react';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
-import randomcolor from 'randomcolor';
+// import randomcolor from 'randomcolor';
 
 import { Storage } from 'aws-amplify';
 import { S3Image } from 'aws-amplify-react';
+import { navigate } from "@reach/router"
 
-// const COLORS = ['#9196a0', '#dfbbb1', '#f56476', '#e43f6f'];
-// const randomColor = () => {
-//   const index = Math.floor(Math.random() * COLORS.length);
-//   return COLORS[index];
-// }
+const COLORS = ['#e9ecef']; //['#9196a0', '#dfbbb1', '#f56476', '#e43f6f'];
+const randomcolor = () => {
+  const index = Math.floor(Math.random() * COLORS.length);
+  return COLORS[index];
+}
 
 class ArchiveCard extends PureComponent {
   constructor(props) {
@@ -20,7 +21,6 @@ class ArchiveCard extends PureComponent {
 
   componentDidMount() {
     Storage.get(`${this.props.item.name}`, {
-      // download: true,
       contentEncoding: 'application/pdf',
       contentDisposition: 'inline'
     })
@@ -28,7 +28,7 @@ class ArchiveCard extends PureComponent {
     .catch(err => this.setState({ fetching: false, err: true }))
   }
 
-  viewFolder = () => this.props.pushTo(`/?prefix=${this.props.item.name}`)
+  viewFolder = () => navigate(`/?prefix=${this.props.item.name}`)
   viewInBrowser = () => window.open(this.state.src)
 
   render() {
@@ -46,12 +46,14 @@ class ArchiveCard extends PureComponent {
       // const bgColor = randomColor();
 
       return (
-        <Card className="height-200">
+        <Card onClick={this.viewFolder} className="height-225 cursor-pointer">
           <Card.ImgOverlay className="d-flex flex-column jc-space-between fh" style={{ backgroundColor: `${bgColor}`}}>
             <Card.Title className="card-title card-title-folder">{name.slice(0, -1)}</Card.Title>
-            <div className="d-flex justify-content-end">
-              <Button variant="primary" onClick={this.viewFolder}>View Issues</Button>
-            </div>
+            {
+              // <div className="d-flex justify-content-end">
+              //   <Button variant="light" onClick={this.viewFolder}>View Issues</Button>
+              // </div>
+            }
           </Card.ImgOverlay>
         </Card>
       );

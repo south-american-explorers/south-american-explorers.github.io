@@ -1,9 +1,5 @@
 import React from 'react'
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-} from 'react-router-dom';
+import { Router } from "@reach/router"
 import Amplify from 'aws-amplify';
 import awsconfig from 'src/aws-exports';
 
@@ -20,17 +16,9 @@ class App extends React.Component {
   render() {
     return (
       <Router>
-        <Switch>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/admin">
-            <Admin />
-          </Route>
-          <Route path="/">
-            <Home />
-          </Route>
-        </Switch>
+        <Login path="/login" />
+        <Admin path="/admin" />
+        <Home path="/" />
       </Router>
     )
   }
