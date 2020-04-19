@@ -35,7 +35,7 @@ function Header(props) {
         }
       </Col>
 
-      <Col xs={width} className="d-flex flex-column align-items-center">
+      <Col xs={width} className="d-flex flex-column align-items-center justify-content-center">
         <h1 className="header-title" onClick={handleHome}>south american explorers.</h1>
       </Col>
 

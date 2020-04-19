@@ -6,7 +6,10 @@ body {
 }
 
 .header {
-  padding: 1em
+  padding: 1em;
+  position: sticky;
+  top: 0;
+  background: rgb(250, 251, 252);
 }
 
 .header-title {

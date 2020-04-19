@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import ArchiveCard from './ArchiveCard';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import Spinner from 'react-bootstrap/Spinner';
 import { Storage } from 'aws-amplify';
+
+import { getQueryParams } from '../utils';
 
 const FILE = 'file';
 const FOLDER = 'folder';
@@ -39,21 +42,10 @@ class Library extends Component {
     }
   }
 
-  getQueryParams(props) {
-    if (!props) props = this.props;
-
-    const { location: { search = '' } = {} } = this.props;
-    return search.slice(1).split('&').reduce((acc, qp) => {
-      const [key, value] = qp.split('=')
-      acc[key] = value;
-      return acc;
-    }, {});
-  }
-
   createRows = data => {
     return new Promise((resolve, reject) => {
       const { columns } = this.state;
-      const { prefix = '' } = this.getQueryParams();
+      const { prefix = '' } = getQueryParams(this.props);
 
       const items = [];
       let batch = [];
@@ -113,7 +105,7 @@ class Library extends Component {
   }
 
   fetchFromBucket() {
-    const { prefix  = '' } = this.getQueryParams();
+    const { prefix  = '' } = getQueryParams(this.props);
     this.setState({ fetching: true });
 
     Storage.list(prefix)
@@ -148,7 +140,12 @@ class Library extends Component {
   render() {
     return (
       <div>
-        { this.state.fetching ? "fetching.." : this.getItems() }
+        { this.state.fetching
+            ? (<div className="d-flex justify-content-center">
+                <Spinner animation="border" role="status" />
+              </div>)
+            : this.getItems()
+        }
       </div>
     )
   }
