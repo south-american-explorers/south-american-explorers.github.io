@@ -13,10 +13,8 @@
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
   },
   "dependencies": {
-    "amazon-cognito-identity-js": "^4.2.1",
     "aws-amplify": "^3.0.7",
     "aws-amplify-react": "^4.1.7",
-    "aws-sdk": "^2.591.0",
     "bootstrap": "^4.3.1",
     "gatsby": "^2.17.4",
     "randomcolor": "^0.5.4",
@@ -25,8 +23,7 @@
     "react-contenteditable": "^3.3.4",
     "react-dom": "^16.11.0",
     "react-dropzone": "^10.2.2",
-    "react-pdf": "^4.1.0",
-    "react-router-dom": "^5.1.2"
+    "react-pdf": "^4.1.0"
   },
   "devDependencies": {
     "gatsby-plugin-root-import": "^2.0.5",
