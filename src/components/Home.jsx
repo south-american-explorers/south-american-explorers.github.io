@@ -39,7 +39,7 @@ class Home extends PureComponent {
       jumbotron = defaultJumbotron();
     } else {
       const { prefix = '' } = getQueryParams(this.props);
-      jumbotron = folderJumbotron(qp.prefix.split('/')[0]);
+      jumbotron = folderJumbotron(prefix.split('/')[0]);
     }
 
     return (
